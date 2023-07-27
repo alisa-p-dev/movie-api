@@ -1,0 +1,35 @@
+    body {
+      font-family: Arial, sans-serif;
+      line-height: 1.6;
+      color: #333;
+    }
+
+    h1 {
+      color: #007BFF;
+    }
+
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      margin-bottom: 20px;
+      border: 2px solid #007BFF;
+    }
+
+    th, td {
+      border: 1px solid #007BFF;
+      padding: 8px;
+      text-align: left;
+    }
+
+    th {
+      background-color: #007BFF;
+      color: #fff;
+    }
+
+    pre {
+      background-color: #E9F7EF;
+      color: #007B5F;
+      padding: 10px;
+      border-radius: 4px;
+      white-space: pre-wrap;
+    }

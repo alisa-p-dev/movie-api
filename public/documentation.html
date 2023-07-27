@@ -1,17 +1,167 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
-
   <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Documentation</title>
+    <link rel="stylesheet" href="style.css" />
   </head>
 
   <body>
-    <h1>This is the Documentation for myFlix</h1>
-    
-    <p>This is an application that will let you sort through different genres of movies <br>
-        and directors, and let you save your favorite movies to your account.
-    </p>
-</body>
+    <body>
+      <h1>API Documentation</h1>
+      <table>
+        <tr>
+          <th>Business Logic</th>
+          <th>URL</th>
+          <th>HTTP Method</th>
+          <th>Request body data format</th>
+          <th>Response body data format</th>
+        </tr>
+        <tr>
+          <td>Return a list of ALL movies to the user</td>
+          <td>/movies</td>
+          <td>GET</td>
+          <td>None</td>
+          <td>A JSON object holding data about all movies.</td>
+        </tr>
+        <tr>
+          <td>Return data about a single movie by title to the user.</td>
+          <td>/movies/[Title]</td>
+          <td>GET</td>
+          <td>None</td>
+          <td>
+            A JSON object holding data about a single movie, containing
+            description, genre, director, image URL, whether it’s featured.
+            <pre>
+{
+                "id": 1,
+                "name": "Lord of the Rings",
+                "description": "Is an epic fantasy adventure...",
+                "genre": "Fantasy",
+                "director": "Peter Jackson",
+                "imageUrl": "https://example.com/lord_of_the_rings.jpg",
+                "isFeatured": true
+              }</pre
+            >
+          </td>
+        </tr>
+        <tr>
+          <td>
+            Return data about a genre (description) by name/title (e.g.,
+            “Thriller”).
+          </td>
+          <td>/genres/[Name]</td>
+          <td>GET</td>
+          <td>None</td>
+          <td>
+            A JSON object holding a description of a selected genre.
+            <pre>
+{
+                "genre": "Action",
+                "description": "Action films are characterized by..."
+              }</pre
+            >
+          </td>
+        </tr>
+        <tr>
+          <td>
+            Return data about a director (bio, birth year, death year) by name.
+          </td>
+          <td>/directos/[Name]</td>
+          <td>GET</td>
+          <td>None</td>
+          <td>
+            A JSON object holding data about a film director, containing bio,
+            birth year, death year. Example:
+            <pre>
+{
+            "name": "Steven Spielberg",
+            "bio": "Steven Spielberg is an American film director, producer, and screenwriter. Films: Jaws,
+              E.T. the Extra-Terrestrial, Jurassic Park,Schindler's List, and Saving Private Ryan.",
+            "birthYear": 1946,
+            "deathYear": null
+            }</pre
+            >
+          </td>
+        </tr>
+        <tr>
+          <td>Allow new users to register.</td>
+          <td>/users</td>
+          <td>POST</td>
+          <td>
+            A JSON object holding data about the user credentials(username,
+            password), structured like:
+            <pre>
+{
+  "username": "example_user",
+  "password": ""example_password"
+}</pre
+            >
+          </td>
+          <td>
+            A JSON object holding data about the user that has been created,
+            including an ID:
+            <pre>
+{
+                "userId":"123-123-12334",
+                "username": "example_user",
+                "password": "example_password"
+              }</pre
+            >
+          </td>
+        </tr>
+        <tr>
+          <td>Allow users to update their user info (username).</td>
+          <td>/users/[userId]</td>
+          <td>PUT</td>
+          <td>
+            A JSON object holding a new username.
+            <pre>
+              {
+                "username": "new_username"
+              }
+            </pre>
+          </td>
+          <td>A text message indicating the username has been updated.</td>
+        </tr>
+        <tr>
+          <td>Allow users to add a movie to their list of favorites.</td>
+          <td>/users/[userId]/favorites</td>
+          <td>POST</td>
+          <td>
+            A JSON object holding a movie data. Example:
+            <pre>{
+              "movieId": 456,
+              "title": "The Shawshank Redemption",
+              "genre": "Drama",
+              "director": "Frank Darabont",
+              "imageUrl": "https://example.com/shawshank_redemption_poster.jpg"
+            }</pre>
+          </td>
+          <td>
+            A text message indicating that the movie has been added to
+            favourites.
+          </td>
+        </tr>
+        <tr>
+          <td>Allow users to remove a movie from their list of favorites.</td>
+          <td>users/[userId]/favorites/[movieId]</td>
+          <td>DELETE</td>
+          <td>None</td>
+          <td>
+            A text message indicating that the movie has been removed from
+            favourites.
+          </td>
+        </tr>
+        <tr>
+          <td>Allow existing users to deregister.</td>
+          <td>users/[userId]</td>
+          <td>DELETE</td>
+          <td>None</td>
+          <td>A text message indicating that the user has been removed.</td>
+        </tr>
+      </table>
+    </body>
+  </body>
 </html>
