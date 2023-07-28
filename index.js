@@ -1,8 +1,10 @@
 const express = require("express"),
   morgan = require("morgan"),
-   path = require("path");
+   path = require("path"),
+   uuid = require('uuid');
 
 const app = express();
+app.use(express.json());
 
 app.use(morgan("common"));
 
@@ -109,6 +111,27 @@ let movies = [
     }
   ];
 
+ const directors = [
+  {
+    name: "Steven Spielberg",
+    bio: "Steven Spielberg is an American film director, producer, and screenwriter. He is considered one of the most influential filmmakers in the history of cinema. Spielberg's films often explore themes of adventure, fantasy, and science fiction, and he is best known for directing iconic movies such as Jaws, E.T. the Extra-Terrestrial, Jurassic Park, Schindler's List, and Saving Private Ryan.",
+    birthYear: 1946,
+    deathYear: null 
+  },
+  {
+    name: "Martin Scorsese",
+    bio: "Martin Scorsese is an American-Italian film director, producer, and screenwriter. He is widely regarded as one of the greatest directors in the history of cinema. Scorsese's films often explore themes of crime, violence, and redemption, and he is known for directing classics like Taxi Driver, Raging Bull, Goodfellas, and The Departed.",
+    birthYear: 1942,
+    deathYear: null 
+  },
+  {
+    name: "Alfred Hitchcock",
+    bio: "Alfred Hitchcock was an English film director and producer, often referred to as the 'Master of Suspense.' He directed over 50 films in his career and is best known for classics like Psycho, Vertigo, Rear Window, and North by Northwest. Hitchcock's films are characterized by their psychological suspense and innovative storytelling techniques.",
+    birthYear: 1899,
+    deathYear: 1980 
+  }
+];
+
   let users = [
     {
       "id": "user1_id",
@@ -165,7 +188,7 @@ app.get('/directors/:name', (req, res) => {
 app.post('/users', (req, res) => {
   let newUser = req.body;
 
-  if (!newUser.userName || !newUser.userPassword) {
+  if (!newUser.name || !newUser.password) {
     const message = 'Missing user name or user password in request body';
     res.status(400).send(message);
   } else {
@@ -190,7 +213,7 @@ app.put('/users/:id', (req, res) => {
 });
 
 //POST - Allow users to add a movie to their list of favorites
-app.post('users/:id/favorites', (req, res) => {
+app.post('/users/:id/favorites', (req, res) => {
   const userId = req.params.id;
   const movieData = req.body;
 
@@ -199,20 +222,18 @@ app.post('users/:id/favorites', (req, res) => {
 if(!user){
   res.status(404).send('User with the ID: ' + userId + 'was not found');
 } else {
-const movie = movies.find((movie) => movie.id === movieData.movieId)
+const movie = movies.find((movie) => movie.id === movieData.id)
   if (!movie) {
-    res.status(404).send('Movie with the ID: ' + movieId + 'was not found');
+    res.status(404).send('Movie with the ID: ' + movieData.id + 'was not found');
   } else{
     if (!user.favorites) {
       user.favorites = [];
     }
     user.favorites.push(movieData);
 
-    res.status(201).send('Movie ' + movie.name + ' has been added to favorites.');
+    res.status(201).send('Movie ' + movieData.name + ' has been added to favorites.');
   }
 }
-  favorites.push(movie);
-res.status(201).send('Movie has been added to favorites');
 });
 
 //DELETE - Allow users to remove a movie from their list of favorites
@@ -229,7 +250,7 @@ app.delete('/users/:userId/favorites/:movieId', (req, res) => {
     if (!user.favorites || user.favorites.length === 0) {
       res.status(404).send('User does not have any favorites.');
     } else {
-      const movieIndex = user.favorites.findIndex((movie) => movie.movieId === movieId);
+      const movieIndex = user.favorites.findIndex((movie) => movie === movieId);
 
       if (movieIndex === -1) {
         res.status(404).send('Movie with ID ' + movieId + ' was not found in favorites.');
@@ -240,6 +261,7 @@ app.delete('/users/:userId/favorites/:movieId', (req, res) => {
     }
   }
 });
+
 //DELETE - Allow existing users to deregister 
 app.delete('/users/:userId', (req, res) => {
   const userId = req.params.userId;
