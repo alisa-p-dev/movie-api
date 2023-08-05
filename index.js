@@ -1,154 +1,21 @@
 const express = require("express"),
   morgan = require("morgan"),
-   path = require("path"),
-   uuid = require('uuid');
+  path = require("path"),
+  uuid = require('uuid'),
+  mongoose = require('mongoose'),
+  Models = require('./models.js');
+
+const Movies = Models.Movie;
+const Users = Models.User;
+
+mongoose.connect('mongodb://localhost:27017/myFlixDB', 
+{ useNewUrlParser: true, useUnifiedTopology: true });
 
 const app = express();
+app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 app.use(morgan("common"));
-
-let movies = [
-  {
-    "id": 1,
-    "name": "Lord of the Rings",
-    "description": "The Lord of the Rings is an epic fantasy adventure...",
-    "genre": "Fantasy",
-    "director": "Peter Jackson",
-    "imageUrl": "https://example.com/lord_of_the_rings_poster.jpg",
-    "isFeatured": true
-  },
-  {
-    "id": 2,
-    "name": "Inception",
-    "description": "Inception is a mind-bending sci-fi thriller...",
-    "genre": "Sci-Fi",
-    "director": "Christopher Nolan",
-    "imageUrl": "https://example.com/inception_poster.jpg",
-    "isFeatured": false
-  },
-  {
-    "id": 3,
-    "name": "The Shawshank Redemption",
-    "description": "The Shawshank Redemption is a powerful drama...",
-    "genre": "Drama",
-    "director": "Frank Darabont",
-    "imageUrl": "https://example.com/shawshank_redemption_poster.jpg",
-    "isFeatured": true
-  },
-  {
-    "id": 4,
-    "name": "Jurassic Park",
-    "description": "Jurassic Park is a thrilling adventure...",
-    "genre": "Action",
-    "director": "Steven Spielberg",
-    "imageUrl": "https://example.com/jurassic_park_poster.jpg",
-    "isFeatured": false
-  },
-  {
-    "id": 5,
-    "name": "The Dark Knight",
-    "description": "The Dark Knight is a gripping superhero film...",
-    "genre": "Action",
-    "director": "Christopher Nolan",
-    "imageUrl": "https://example.com/dark_knight_poster.jpg",
-    "isFeatured": true
-  },
-  {
-    "id": 6,
-    "name": "Avatar",
-    "description": "Avatar is a visually stunning sci-fi epic...",
-    "genre": "Sci-Fi",
-    "director": "James Cameron",
-    "imageUrl": "https://example.com/avatar_poster.jpg",
-    "isFeatured": true
-  },
-  {
-    "id": 7,
-    "name": "Forrest Gump",
-    "description": "Forrest Gump is a heartwarming drama...",
-    "genre": "Drama",
-    "director": "Robert Zemeckis",
-    "imageUrl": "https://example.com/forrest_gump_poster.jpg",
-    "isFeatured": false
-  },
-  {
-    "id": 8,
-    "name": "Interstellar",
-    "description": "Interstellar is an ambitious space odyssey...",
-    "genre": "Sci-Fi",
-    "director": "Christopher Nolan",
-    "imageUrl": "https://example.com/interstellar_poster.jpg",
-    "isFeatured": true
-  },
-  {
-    "id": 9,
-    "name": "The Godfather",
-    "description": "The Godfather is a classic crime drama...",
-    "genre": "Crime",
-    "director": "Francis Ford Coppola",
-    "imageUrl": "https://example.com/the_godfather_poster.jpg",
-    "isFeatured": false
-  },
-  {
-    "id": 10,
-    "name": "Gladiator",
-    "description": "Gladiator is an epic historical action film...",
-    "genre": "Action",
-    "director": "Ridley Scott",
-    "imageUrl": "https://example.com/gladiator_poster.jpg",
-    "isFeatured": false
-  }];
-
-  const genres = [
-    {
-      "name": "Action",
-      "description": "Action films are characterized by intense and exciting sequences involving physical feats, combat, stunts, and high-speed chases. They often feature a hero or protagonist facing extraordinary challenges and overcoming obstacles in thrilling and adrenaline-pumping scenarios. Action movies can encompass various sub-genres, such as martial arts, spy thrillers, superhero films, and more."
-    },
-    {
-      "name": "Drama",
-      "description": "Drama films explore complex human emotions and interpersonal relationships. They often present thought-provoking and emotional stories that can evoke a wide range of feelings in the audience. Drama movies can cover various themes, including family dynamics, personal struggles, societal issues, and more."
-    }
-  ];
-
- const directors = [
-  {
-    name: "Steven Spielberg",
-    bio: "Steven Spielberg is an American film director, producer, and screenwriter. He is considered one of the most influential filmmakers in the history of cinema. Spielberg's films often explore themes of adventure, fantasy, and science fiction, and he is best known for directing iconic movies such as Jaws, E.T. the Extra-Terrestrial, Jurassic Park, Schindler's List, and Saving Private Ryan.",
-    birthYear: 1946,
-    deathYear: null 
-  },
-  {
-    name: "Martin Scorsese",
-    bio: "Martin Scorsese is an American-Italian film director, producer, and screenwriter. He is widely regarded as one of the greatest directors in the history of cinema. Scorsese's films often explore themes of crime, violence, and redemption, and he is known for directing classics like Taxi Driver, Raging Bull, Goodfellas, and The Departed.",
-    birthYear: 1942,
-    deathYear: null 
-  },
-  {
-    name: "Alfred Hitchcock",
-    bio: "Alfred Hitchcock was an English film director and producer, often referred to as the 'Master of Suspense.' He directed over 50 films in his career and is best known for classics like Psycho, Vertigo, Rear Window, and North by Northwest. Hitchcock's films are characterized by their psychological suspense and innovative storytelling techniques.",
-    birthYear: 1899,
-    deathYear: 1980 
-  }
-];
-
-  let users = [
-    {
-      "id": "user1_id",
-      "name": "John Doe",
-      "password": "password1"
-    },
-    {
-      "id": "user2_id",
-      "name": "Jane Smith",
-      "password": "password2"
-    },
-    {
-      "id": "user3_id",
-      "name": "Alice Johnson",
-      "password": "password3"
-    }
-  ];
 
 app.use(express.static("public"));
 
@@ -161,118 +28,171 @@ app.get("/documentation", (req, res) => {
    res.sendFile("documentation.html");
    });
 
-// Gets the list of all movies
-app.get("/movies", (req, res) => {
-  res.json(movies);
+// GET the list of all movies
+app.get("/movies", async (req, res) => {
+  await Movies.find()
+  .then ((movies) => {
+    res.status(201).json(movies);
+  })
+  .catch((err) => {
+    console.error(err);
+    res.status(500).send('Error:' + err);
+  });
 });
 
-// Gets the data about a single movie, by title
-app.get('/movies/:name', (req, res) => {
-  res.json(movies.find((movie) =>
-    { return movie.name === req.params.name }));
+// GET the data about a single movie, by title
+app.get('/movies/:Title', async (req, res) => {
+  await Movies.findOne({ Title: req.params.Title})
+  .then((movie) => {
+    res.json(movie);
+  })
+  .catch((err) => {
+    console.error(err);
+    res.status(500).send('Error:' + err);
+  });
 });
 
-//Gets data about a genre, by name
-app.get('/genres/:name', (req, res) => {
-  res.json(genres.find((genre) =>
-    { return genre.name === req.params.name }));
+//GET data about a genre, by name
+app.get('/genres/:Name', async (req, res) => {
+  const genreName = req.params.Name;
+  await Movies.findOne({ 'Genre.Name': genreName })
+  .then((movie) => {
+    res.json(movie.Genre);
+  })
+  .catch((err) => {
+    console.error(err);
+    res.status(500).send('Error:' + err);
+  });
 });
 
 //Gets data about a director (bio, birth year, death year) by name
-app.get('/directors/:name', (req, res) => {
-  res.json(directors.find((director) =>
-    { return director.name === req.params.name }));
+app.get('/directors/:Name', async (req, res) => {
+  const directorName = req.params.Name
+  await Movies.findOne({'Director.Name': directorName })
+  .then ((movie) => {
+    res.json(movie.Director);
+  })
+  .catch((err) => {
+    console.error(err);
+    res.status(500).send('Error:' + err);
+  });
 });
 
-//Post - Allow new users to register
-app.post('/users', (req, res) => {
-  let newUser = req.body;
-
-  if (!newUser.name || !newUser.password) {
-    const message = 'Missing user name or user password in request body';
-    res.status(400).send(message);
-  } else {
-      newUser.id = uuid.v4();
-      users.push(newUser);
-      res.status(201).send(newUser);
-  }
+//POST - Allow new users to register
+/* We’ll expect JSON in this format
+{
+  ID: Integer,
+  Username: String,
+  Password: String,
+  Email: String,
+  Birthday: Date
+}*/
+app.post('/users', async (req, res) => {
+  await Users.findOne({ Username: req.body.Username })
+    .then((user) => {
+      if (user) {
+        return res.status(400).send(req.body.Username + 'already exists');
+      } else {
+        Users
+          .create({
+            Username: req.body.Username,
+            Password: req.body.Password,
+            Email: req.body.Email,
+            Birthday: req.body.Birthday
+          })
+          .then((user) =>{res.status(201).json(user) })
+        .catch((error) => {
+          console.error(error);
+          res.status(500).send('Error: ' + error);
+        })
+      }
+    })
+    .catch((error) => {
+      console.error(error);
+      res.status(500).send('Error: ' + error);
+    });
 });
 
-//PUT - Allow users to update their user info (username)
-app.put('/users/:id', (req, res) => {
-  const userId = req.params.id;
-  const newName = req.body.name;
-
-  const user = users.find((user) => user.id === userId)
-  if (!user){
-    res.status(404).send('User with ID ' + userId + ' was not found.');
-  } else {
-    user.name = newName;
-    res.status(201).send('Username has been updated to ' + newName);
-  }
+// GET a user by username
+app.get('/users/:Username', async (req, res) => {
+  await Users.findOne({ Username: req.params.Username })
+    .then((user) => {
+      res.json(user);
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(500).send('Error: ' + err);
+    });
 });
 
-//POST - Allow users to add a movie to their list of favorites
-app.post('/users/:id/favorites', (req, res) => {
-  const userId = req.params.id;
-  const movieData = req.body;
+// PUT - Update a user's info, by username
 
-  const user = users.find((user) => user.id === userId);
-
-if(!user){
-  res.status(404).send('User with the ID: ' + userId + 'was not found');
-} else {
-const movie = movies.find((movie) => movie.id === movieData.id)
-  if (!movie) {
-    res.status(404).send('Movie with the ID: ' + movieData.id + 'was not found');
-  } else{
-    if (!user.favorites) {
-      user.favorites = [];
+app.put('/users/:Username', async (req, res) => {
+  await Users.findOneAndUpdate({ Username: req.params.Username }, { $set:
+    {
+      Username: req.body.Username,
+      Password: req.body.Password,
+      Email: req.body.Email,
+      Birthday: req.body.Birthday
     }
-    user.favorites.push(movieData);
+  },
+  { new: true }) // This line makes sure that the updated document is returned
+  .then((updatedUser) => {
+    res.json(updatedUser);
+  })
+  .catch((err) => {
+    console.error(err);
+    res.status(500).send('Error: ' + err);
+  })
 
-    res.status(201).send('Movie ' + movieData.name + ' has been added to favorites.');
-  }
-}
 });
+
+// POST - Add a movie to a user's list of favorites
+app.post('/users/:Username/movies/:MovieID', async (req, res) => {
+  await Users.findOneAndUpdate({ Username: req.params.Username }, {
+     $push: { FavoriteMovies: req.params.MovieID }
+   },
+   { new: true }) // This line makes sure that the updated document is returned
+  .then((User) => {
+    res.json(User);
+  })
+  .catch((err) => {
+    console.error(err);
+    res.status(500).send('Error: ' + err);
+  });
+});
+
 
 //DELETE - Allow users to remove a movie from their list of favorites
-
-app.delete('/users/:userId/favorites/:movieId', (req, res) => {
-  const userId = req.params.userId;
-  const movieId = req.params.movieId;
-
-  const user = users.find((user) => user.id === userId);
-
-  if (!user) {
-    res.status(404).send('User with ID ' + userId + ' was not found.');
-  } else {
-    if (!user.favorites || user.favorites.length === 0) {
-      res.status(404).send('User does not have any favorites.');
-    } else {
-      const movieIndex = user.favorites.findIndex((movie) => movie === movieId);
-
-      if (movieIndex === -1) {
-        res.status(404).send('Movie with ID ' + movieId + ' was not found in favorites.');
-      } else {
-        user.favorites.splice(movieIndex, 1);
-        res.status(200).send('Movie with ID ' + movieId + ' has been removed from favorites.');
-      }
-    }
-  }
+app.delete('/users/:Username/movies/:MovieId', async (req, res) => {
+  await Users.findOneAndUpdate(
+    { Username: req.params.Username },
+    { $pull: { FavoriteMovies: req.params.MovieId } },
+    { new: true }
+  )
+    .then((user) => {
+      res.json(user);
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(500).send('Error: ' + err);
+    });
 });
 
-//DELETE - Allow existing users to deregister 
-app.delete('/users/:userId', (req, res) => {
-  const userId = req.params.userId;
-
-  const user = users.find((user) => user.id === userId);
-
-  if (!user) {
-    res.status(404).send('User with ID ' + userId + ' was not found.');
-  } else {
-    res.status(200).send('User with ID ' + userId + ' has been removed.');
-  }
+// DELETE a user by username
+app.delete('/users/:Username', async (req, res) => {
+  await Users.findOneAndRemove({ Username: req.params.Username })
+    .then((user) => {
+      if (!user) {
+        res.status(400).send(req.params.Username + ' was not found');
+      } else {
+        res.status(200).send(req.params.Username + ' was deleted.');
+      }
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(500).send('Error: ' + err);
+    });
 });
 
 // Error handling middleware

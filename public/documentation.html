@@ -51,7 +51,7 @@
             Return data about a genre (description) by name/title (e.g.,
             “Thriller”).
           </td>
-          <td>/genres/[Name]</td>
+          <td>/genres/[Title]</td>
           <td>GET</td>
           <td>None</td>
           <td>
@@ -113,7 +113,7 @@
         </tr>
         <tr>
           <td>Allow users to update their user info (username).</td>
-          <td>/users/[userId]</td>
+          <td>/users/[username]</td>
           <td>PUT</td>
           <td>
             A JSON object holding a new username.
@@ -127,7 +127,7 @@
         </tr>
         <tr>
           <td>Allow users to add a movie to their list of favorites.</td>
-          <td>/users/[userId]/favorites</td>
+          <td>/users/[username]/movies/[movieId]</td>
           <td>POST</td>
           <td>
             A JSON object holding a movie data. Example:
@@ -146,7 +146,7 @@
         </tr>
         <tr>
           <td>Allow users to remove a movie from their list of favorites.</td>
-          <td>users/[userId]/favorites/[movieId]</td>
+          <td>users/[username]/movies/[movieId]</td>
           <td>DELETE</td>
           <td>None</td>
           <td>
