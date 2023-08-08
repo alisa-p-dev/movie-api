@@ -16,8 +16,6 @@ let movieSchema = mongoose.Schema({
     Featured: Boolean
 });
 
-swords. The second function, validatePassword, is what compares submitted hashed passwords with the hashed passwords stored in your database.
-
 let userSchema = mongoose.Schema({
   Username: {type: String, required: true},
   Password: {type: String, required: true},
