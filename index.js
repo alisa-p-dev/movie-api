@@ -74,12 +74,12 @@ app.get("/movies", async (req, res) => {
     });
 });
 
-// GET the data about a single movie, by title
+// GET the data about a single movie, by id
 app.get(
-  "/movies/:Title",
+  "/movies/:_id",
   passport.authenticate("jwt", { session: false }),
   async (req, res) => {
-    await Movies.findOne({ Title: req.params.Title })
+    await Movies.findOne({ Title: req.params._id })
       .then((movie) => {
         res.json(movie);
       })
