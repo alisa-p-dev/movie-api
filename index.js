@@ -79,7 +79,7 @@ app.get(
   "/movies/:_id",
   passport.authenticate("jwt", { session: false }),
   async (req, res) => {
-    await Movies.findOne({ Title: req.params._id })
+    await Movies.findOne({ _id: req.params._id })
       .then((movie) => {
         res.json(movie);
       })
