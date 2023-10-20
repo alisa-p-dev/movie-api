@@ -32,6 +32,7 @@ let allowedOrigins = [
   "http://testsite.com",
   "http://localhost:1234",
   "https://flixmoviverse.netlify.app",
+  "http://localhost:4200/",
 ];
 
 app.use(
