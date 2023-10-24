@@ -1,3 +1,8 @@
+/**
+ * Express application for the myFlix app.
+ * @module app
+ */
+
 const express = require("express"),
   morgan = require("morgan"),
   path = require("path"),
@@ -10,6 +15,11 @@ const { check, validationResult } = require("express-validator");
 const Movies = Models.Movie;
 const Users = Models.User;
 
+/**
+ * Connects to the MongoDB database using the provided CONNECTION_URI.
+ * @function
+ * @memberof app
+ */
 mongoose.connect(process.env.CONNECTION_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
@@ -18,6 +28,7 @@ mongoose.connect(process.env.CONNECTION_URI, {
 //   useNewUrlParser: true,
 //   useUnifiedTopology: true,
 // });
+
 const app = express();
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
@@ -35,6 +46,11 @@ let allowedOrigins = [
   "http://localhost:4200/",
 ];
 
+/**
+ * Configures CORS for the application to allow specific origins.
+ * @function
+ * @memberof app
+ */
 app.use(
   cors({
     origin: (origin, callback) => {
@@ -55,16 +71,29 @@ let auth = require("./auth")(app);
 const passport = require("passport");
 require("./passport");
 
-// GET requests
+/**
+ * Handles the root endpoint with a welcome message.
+ * @function
+ * @memberof app
+ */
 app.get("/", (req, res) => {
   res.send("Welcome to myFlix app!");
 });
 
+/**
+ * Serves the documentation HTML page.
+ * @function
+ * @memberof app
+ */
 app.get("/documentation", (req, res) => {
   res.sendFile("documentation.html");
 });
 
-// GET the list of all movies
+/**
+ * Retrieves the list of all movies.
+ * @function
+ * @memberof app
+ */
 app.get("/movies", async (req, res) => {
   await Movies.find()
     .then((movies) => {
@@ -76,7 +105,11 @@ app.get("/movies", async (req, res) => {
     });
 });
 
-// GET the data about a single movie, by id
+/**
+ * Retrieves data about a single movie by its ID.
+ * @function
+ * @memberof app
+ */
 app.get(
   "/movies/:_id",
   passport.authenticate("jwt", { session: false }),
@@ -92,7 +125,11 @@ app.get(
   }
 );
 
-//GET data about a genre, by name
+/**
+ * Retrieves data about a genre by its name.
+ * @function
+ * @memberof app
+ */
 app.get(
   "/genres/:Name",
   passport.authenticate("jwt", { session: false }),
@@ -109,7 +146,11 @@ app.get(
   }
 );
 
-//GET data about a director (bio, birth year, death year) by name
+/**
+ * Retrieves data about a director (bio, birth year, death year) by their name.
+ * @function
+ * @memberof app
+ */
 app.get(
   "/directors/:Name",
   passport.authenticate("jwt", { session: false }),
@@ -126,14 +167,18 @@ app.get(
   }
 );
 
-//POST - Allow new users to register
+/**
+ * Allows new users to register.
+ * @function
+ * @memberof app
+ */
 app.post(
   "/users",
   [
     check("Username", "Username is required").isLength({ min: 5 }),
     check(
       "Username",
-      "Username contains non alphanumeric characters - not allowed."
+      "Username contains non-alphanumeric characters - not allowed."
     ).isAlphanumeric(),
     check("Password", "Password is required").not().isEmpty(),
     check("Email", "Email does not appear to be valid").isEmail(),
@@ -175,7 +220,11 @@ app.post(
   }
 );
 
-// GET a user by username
+/**
+ * Retrieves a user by their username.
+ * @function
+ * @memberof app
+ */
 app.get(
   "/users/:Username",
   passport.authenticate("jwt", { session: false }),
@@ -191,8 +240,11 @@ app.get(
   }
 );
 
-// PUT - Update a user's info, by username
-
+/**
+ * Updates a user's information by their username.
+ * @function
+ * @memberof app
+ */
 app.put(
   "/users/:Username",
   passport.authenticate("jwt", { session: false }),
@@ -222,7 +274,11 @@ app.put(
   }
 );
 
-// POST - Add a movie to a user's list of favorites
+/**
+ * Adds a movie to a user's list of favorites.
+ * @function
+ * @memberof app
+ */
 app.post(
   "/users/:Username/movies/:MovieID",
   passport.authenticate("jwt", { session: false }),
@@ -244,7 +300,11 @@ app.post(
   }
 );
 
-//DELETE - Allow users to remove a movie from their list of favorites
+/**
+ * Allows users to remove a movie from their list of favorites.
+ * @function
+ * @memberof app
+ */
 app.delete(
   "/users/:Username/movies/:MovieId",
   passport.authenticate("jwt", { session: false }),
@@ -264,7 +324,11 @@ app.delete(
   }
 );
 
-// DELETE a user by username
+/**
+ * Deletes a user by their username.
+ * @function
+ * @memberof app
+ */
 app.delete(
   "/users/:Username",
   passport.authenticate("jwt", { session: false }),
@@ -284,7 +348,11 @@ app.delete(
   }
 );
 
-// Error handling middleware
+/**
+ * Error handling middleware to log errors and respond with a 500 Internal Server Error.
+ * @function
+ * @memberof app
+ */
 app.use((err, req, res, next) => {
   // Log the error to the terminal
   console.error("Application-level error:", err.stack);
@@ -293,7 +361,11 @@ app.use((err, req, res, next) => {
   res.status(500).send("Something went wrong on the server!");
 });
 
-// listen for requests
+/**
+ * Starts the server and listens for requests.
+ * @function
+ * @memberof app
+ */
 const port = process.env.PORT || 8080;
 app.listen(port, "0.0.0.0", () => {
   console.log("Listening on Port " + port);
