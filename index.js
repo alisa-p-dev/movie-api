@@ -44,7 +44,7 @@ const allowedOrigins = [
   "http://localhost:1234",
   "https://flixmoviverse.netlify.app",
   "http://localhost:4200",
-  "https://alisa-p-dev.github.io/myFlix-Angular-client",
+  "https://alisa-p-dev.github.io",
 ];
 
 /**
