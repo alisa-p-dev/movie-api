@@ -65,6 +65,7 @@ app.use(
       }
       return callback(null, true);
     },
+    allowedHeaders: "*",
   })
 );
 
